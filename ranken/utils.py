@@ -1,52 +1,29 @@
+from scipy.optimize import minimize
 import numpy as np
 
-normalise = lambda phi: phi / np.linalg.norm(phi)
 dagger = lambda x: np.conj(x).T
 
-def Projector(basis):
-  projector = np.array([
-    np.outer(basis[i], dagger(basis[i]))
-      for i in range(len(basis))
-  ])
+ROUNDOFF_TOL = 1e-6
 
-  perp = np.eye(len(basis[0])) - sum(projector)
-  return projector, perp
+def Loss(phi_rx, projector):
+  left = dagger(phi_rx)
+  right = phi_rx
 
+  prod = np.dot(np.dot(left, projector), right)
 
-class State:
-  Ket_0 = np.array([1, 0])
-  Ket_1 = np.array([0, 1])
-  Ket_p = normalise(np.array([1, 1]))
-  Ket_m = normalise(np.array([1, -1]))
-  Ket_i = normalise(np.array([1, 1j]))
-  Ket_mi = normalise(np.array([1, -1j]))
+  return np.real_if_close(prod, tol=ROUNDOFF_TOL)
 
-  def create(state, basis_vec):
-    return np.kron(state, basis_vec)
+def rand(max_val, size):
+  return np.random.randint(-max_val, max_val, size=size)
 
-  def combine(states, coeffs):
-    if len(states) != len(coeffs):
-      raise ValueError("states and coeffs must have the same length")
-    return normalise(sum([coeffs[i]*states[i] for i in range(len(states))]))
+def urand(max_val, size):
+  return np.random.randint(0, max_val, size=size)
 
-def gs_cofficient(v1, v2):
-  return np.dot(v2, v1) / np.dot(v1, v1)
+def minima(f, x0, **kwargs):
+  if 'method' not in kwargs:
+    kwargs['method'] = 'L-BFGS-B'
 
-def multiply(cofficient, v):
-  return list(map((lambda x : x * cofficient), v))
+  if 'tol' not in kwargs:
+    kwargs['tol'] = ROUNDOFF_TOL
 
-def proj(v1, v2):
-  return multiply(gs_cofficient(v1, v2) , v1)
-
-# usage:
-# subspace_basis = np.array([PSI(i) for i in range(2)])
-# subspace_basis = gs(subspace_basis)
-def GramSchmidt(X):
-  Y = []
-  for i in range(len(X)):
-    temp_vec = X[i]
-    for inY in Y :
-      proj_vec = proj(inY, X[i])
-      temp_vec = list(map(lambda x, y : x - y, temp_vec, proj_vec))
-    Y.append(temp_vec)
-  return Y
+  return minimize(f, x0=x0, **kwargs)
