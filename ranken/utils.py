@@ -3,15 +3,31 @@ import numpy as np
 normalise = lambda phi: phi / np.linalg.norm(phi)
 dagger = lambda x: np.conj(x).T
 
+def Projector(basis):
+  projector = np.array([
+    np.outer(basis[i], dagger(basis[i]))
+      for i in range(len(basis))
+  ])
 
-# States.Ket0
-class States:
+  perp = np.eye(len(basis[0])) - sum(projector)
+  return projector, perp
+
+
+class State:
   Ket_0 = np.array([1, 0])
   Ket_1 = np.array([0, 1])
   Ket_p = normalise(np.array([1, 1]))
   Ket_m = normalise(np.array([1, -1]))
   Ket_i = normalise(np.array([1, 1j]))
   Ket_mi = normalise(np.array([1, -1j]))
+
+  def create(state, basis_vec):
+    return np.kron(state, basis_vec)
+
+  def combine(states, coeffs):
+    if len(states) != len(coeffs):
+      raise ValueError("states and coeffs must have the same length")
+    return normalise(sum([coeffs[i]*states[i] for i in range(len(states))]))
 
 def gs_cofficient(v1, v2):
   return np.dot(v2, v1) / np.dot(v1, v1)
