@@ -1,4 +1,4 @@
-<img src="./assets/icon.svg" width="100" height="100" align="right">
+<img src="https://raw.githubusercontent.com/plutoniumm/ranken/master/assets/icon.svg" width="75" height="75" align="right">
 
 ### Ranken
 Finding entanglement rank
@@ -13,14 +13,14 @@ After `pip install ranken`, you can use the package as follows:
 from ranken.core import State
 
 Rn = 3
+theta = np.pi/2
+
 basis = np.eye(Rn)
+def PSI(i):
+  A = State.create(State.Ket_0, basis[i%l])
+  B = State.create(State.Ket_1, basis[(i+1)%l])
 
-THETA = np.pi/2
-l = 3
-A = State.create(State.Ket_0, basis[i%Rn])
-B = State.create(State.Ket_1, basis[(i+1)%Rn])
-
-return State.combine([A, B], [np.cos(THETA/2), np.sin(THETA/2)])
+  return State.combine([A, B], [np.cos(theta/2), np.sin(theta/2)])
 ```
 
 ### Make Projectors
