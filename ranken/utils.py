@@ -26,4 +26,17 @@ def minima(f, x0, **kwargs):
   if 'tol' not in kwargs:
     kwargs['tol'] = ROUNDOFF_TOL
 
-  return minimize(f, x0=x0, **kwargs)
+  if 'tries' in kwargs:
+    tries = kwargs['tries']
+    del kwargs['tries']
+  else:
+    tries = 1
+
+  minimas = np.ones(tries)
+  for i in range(tries):
+    try:
+      minimas[i] = minimize(f, x0=x0, **kwargs).fun
+    except Exception as e:
+      pass
+
+  return np.min(minimas)

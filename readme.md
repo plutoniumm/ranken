@@ -17,8 +17,8 @@ theta = np.pi/2
 
 basis = np.eye(Rn)
 def PSI(i):
-  A = State.create(State.Ket_0, basis[i%l])
-  B = State.create(State.Ket_1, basis[(i+1)%l])
+  A = State.create(State.Ket_0, basis[i%Rn])
+  B = State.create(State.Ket_1, basis[(i+1)%Rn])
 
   return State.combine([A, B], [np.cos(theta/2), np.sin(theta/2)])
 ```
@@ -49,11 +49,14 @@ def phi_ik(X):
 def f(X):
   L, qbit, qtrit = phi_ik(X)
   PHI_rx = normalise(L * np.kron(qbit, qtrit))
+  # Multiple phis can be done with
+  # PHI_rx = State.combine([phi_rx1, phi_rx2, phi_rx3], [1, 1, 1])
 
   return Loss(PHI_rx, proj_perp)
 
-res = minima(f, rand(R_MAX, size))
-print(f'E_r(θ={THETA:.2f}) = {res.fun:.4f}')
+# minima accepts all the arguments of scipy.optimize.minimize
+res = minima(f, rand(R_MAX, size), tries=2)
+print(f'E_r(θ={THETA:.2f}) = {res:.4f}')
 ```
 
 ## Dev

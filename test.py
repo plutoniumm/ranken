@@ -1,4 +1,4 @@
-from ranken.core import State, normalise, dagger, GramSchmidt, Projector, Qdit
+from ranken.core import State, normalise, Projector, Qdit
 from ranken.utils import Loss, rand, minima
 import numpy as np
 
@@ -8,17 +8,15 @@ THETA = 1.5
 d = 3 # dim of QuDit 2
 D = 5 # Qubit + Qutrit
 r = 2 # level of entanglement
-a = np.cos(THETA/2)
-b = np.sin(THETA/2)
 
-l = 3
-basis = np.eye(l)
+Rn = 3
+basis = np.eye(Rn)
 
 def PSI(i):
-  A = State.create(State.Ket_0, basis[i%l])
-  B = State.create(State.Ket_1, basis[(i+1)%l])
+  A = State.create(State.Ket_0, basis[ i % Rn ])
+  B = State.create(State.Ket_1, basis[ (i+1) % Rn ])
 
-  return State.combine([A, B], [a, b])
+  return State.combine([A, B], [np.cos(THETA/2), np.sin(THETA/2)])
 
 subspace_basis = np.array([PSI(i) for i in range(2)])
 # subspace_basis = GramSchmidt(subspace_basis)
@@ -40,8 +38,5 @@ def f(X):
 
   return Loss(PHI_rx, proj_perp)
 
-res = minima(f, rand(R_MAX, size))
-minim = res.fun
-params = res.x
-print(f'E_r(θ={THETA:.2f}) = {minim:.4f} | Iters: {res.nfev}')
-print(f"Hilbert Space sz: {size} @ 1Qubit + 1Qutrit")
+res = minima(f, rand(R_MAX, size), tries=2)
+print(f'E_r(θ={THETA:.2f}) = {res:.4f}')
