@@ -15,7 +15,10 @@ def Qdit(order, coeffs):
 
 
 
-def Projector(basis):
+def Projector(basis, gs=False):
+  if gs:
+    basis = GramSchmidt(basis)
+
   projector = np.array([
     np.outer(basis[i], dagger(basis[i]))
       for i in range(len(basis))

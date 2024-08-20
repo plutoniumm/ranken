@@ -5,7 +5,7 @@ with open('readme.md', 'r') as fh:
 
 setup(
   name='ranken',
-  version='0.0.1',
+  version='0.0.3',
   description='Finding Entanglement Rank',
   long_description=long_description,
   long_description_content_type='text/markdown',

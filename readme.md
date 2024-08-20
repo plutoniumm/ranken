@@ -28,9 +28,8 @@ def PSI(i):
 from ranken.core import Projector
 
 subspace_basis = np.array([PSI(i) for i in range(2)])
-# subspace_basis = GramSchmidt(subspace_basis)
-
 proj, proj_perp = Projector(basis=subspace_basis)
+# optionally pass gs=True to run Gram-Schmidt on basis
 ```
 
 ### Find Rank
